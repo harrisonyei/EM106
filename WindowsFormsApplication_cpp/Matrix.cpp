@@ -249,7 +249,6 @@ std::vector<double> Matrix::SolveLinearSys(Matrix& m1, Matrix& m2) {
 		m1.Data[i].push_back(m2.Data[i][0]);
 	}
 	for (int i = 0; i < m1.Data.size(); i++) {
-
 		for (int end = m1.Data.size() - 1; !m1.Data[i][idx] && end > i; end--) {
 			vector<double> tmp;
 			tmp = m1.Data[i];

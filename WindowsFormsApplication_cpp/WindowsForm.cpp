@@ -5,9 +5,9 @@ using namespace System::Windows::Forms;
 #ifdef DEBUG_M
 int main() {
 	Matrix m;
-	m.Data.push_back({ 1,1,1 });
-	m.Data.push_back({ 2,2,3 });
-	m.Data.push_back({ 1,2,3 });
+	m.Data.push_back({ -2,-7,-2 });
+	m.Data.push_back({ 2,7,5 });
+	m.Data.push_back({ 2,8,5 });
 	Matrix m2;
 	m2.Data.push_back({ 1});
 	m2.Data.push_back({ 2});
