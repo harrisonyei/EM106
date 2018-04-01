@@ -3,16 +3,16 @@
 using namespace System;
 using namespace System::Windows::Forms;
 #ifdef DEBUG_M
-int main() {
+int main(){
 	Matrix m;
-	m.Data.push_back({ -2,-7,-2 });
-	m.Data.push_back({ 2,7,5 });
-	m.Data.push_back({ 2,8,5 });
-	Matrix m2;
-	m2.Data.push_back({ 1});
-	m2.Data.push_back({ 2});
-	m2.Data.push_back({ 3});
-	Matrix::SolveLinearSys(m, m2);
+	try{
+		m.Data.push_back({-30,47,47});
+		m.Data.push_back({75,-19,6});
+		m.Data.push_back({77,7,-18});
+		Matrix::Eigen(m,m,m);
+	} catch(const char* msg){
+		std::cout << msg << std::endl;
+	}
 	system("PAUSE");
 	return 0;
 }
@@ -26,3 +26,5 @@ void main(array<String^>^ args)
 	Application::Run(%windowsForm);
 }
 #endif // DEBUG_M
+
+
