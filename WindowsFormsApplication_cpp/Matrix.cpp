@@ -41,9 +41,9 @@ Matrix Matrix::operator*(Matrix& m) {
 	int m1ColSize = this->Data.begin()->size();
 	int m2ColSize = m.Data.begin()->size();
 
-	for (int i = 0; i < m2RowSize; i++) {
+	for (int i = 0; i < m1RowSize; i++) {
 		vector<double> row;
-		for (int j = 0; j < m1ColSize; j++) {
+		for (int j = 0; j < m2ColSize; j++) {
 			double value = 0;
 			for (int k = 0; k < m1ColSize; k++) {
 				value += this->Data[i][k] * m.Data[k][j];
@@ -65,12 +65,36 @@ Matrix Matrix::operator*(Vector& v) {
 	int m1ColSize = this->Data.begin()->size();
 	int m2ColSize = 1;
 
-	for (int i = 0; i < m2RowSize; i++) {
+	for (int i = 0; i < m1RowSize; i++) {
 		vector<double> row;
-		for (int j = 0; j < m1ColSize; j++) {
+		for (int j = 0; j < m2ColSize; j++) {
 			double value = 0;
 			for (int k = 0; k < m1ColSize; k++) {
 				value += this->Data[i][k] * v.Data[k];
+			}
+			row.push_back(value);
+		}
+		result.Data.push_back(row);
+	}
+	return result;
+}
+Matrix operator*(Vector& v,Matrix& m){
+	Matrix result;
+	if(m.Data.size() != v.Data.size())
+		throw "invalid";
+
+	int m1RowSize = 1;
+	int m2RowSize = m.Data.size();
+
+	int m1ColSize = v.Data.size();
+	int m2ColSize = m.Data.front().size();
+
+	for(int i = 0; i < m1RowSize; i++){
+		vector<double> row;
+		for(int j = 0; j < m2ColSize; j++){
+			double value = 0;
+			for(int k = 0; k < m1ColSize; k++){
+				value += m.Data[k][i] * v.Data[k];
 			}
 			row.push_back(value);
 		}
@@ -353,6 +377,28 @@ void Matrix::Eigen(Matrix& m, Matrix& eigenVector, Matrix& eigenValue) {
 }
 void Matrix::PM_Eigen(Matrix& m, Matrix& eigenVector, Matrix& eigenValue) {
 	// not finished
+	double current_lamda=1,pre_lamda=0;
+	Vector u;
+	Matrix Au;
+	u.Data = {1,0,0};
+	while(abs(current_lamda-pre_lamda)>1e-5){
+		Au = m*u;
+		u.Data = Au.T().Data[0];
+		u.Normalized();
+		pre_lamda = current_lamda;
+		current_lamda = (u*Au).Data[0][0];
+	}
+	vector<vector<double>> vs;
+	vs.push_back(u.Data);
+	vs.push_back((m*u).T().Data[0]);
+	vs.push_back((m*Vector(vs.back())).T().Data[0]);
+	for(auto& v : vs){
+		for(auto& i : v){
+			cout << i << " ";
+		}
+		cout << endl;
+	}
+	cout << current_lamda << endl;
 }
 
 void CancelAt(vector<double>& src ,vector<double>& tar,int idx) {

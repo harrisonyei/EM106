@@ -17,6 +17,8 @@ public:
 	Matrix operator*(double scale);
 	Matrix operator/(double scale);
 
+	friend Matrix operator*(Vector& v,Matrix& m);
+
 	Matrix& operator+=(Matrix& v);
 	Matrix& operator-=(Matrix& v);
 	Matrix& operator*=(Matrix& m);
