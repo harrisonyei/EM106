@@ -40,7 +40,7 @@ public:
 	static std::vector<double> SolveLinearSys(Matrix& m1, Matrix& m2);
 	static Vector LeastSquare(Matrix& m, Matrix& v);
 	static std::vector<Matrix> rref(Matrix& m);
-	static Matrix& G_Eliminate(Matrix& m,bool up);
+	static Matrix& G_Eliminate(Matrix& m,bool up,bool autoFill);
 #ifdef DEBUG_M
 	static void PrintM(Matrix& m);
 #endif // DEBUG_M

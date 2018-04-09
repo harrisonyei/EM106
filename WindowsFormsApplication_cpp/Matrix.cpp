@@ -4,7 +4,7 @@
 using namespace std;
 
 #ifdef DEBUG_M
-
+void CancelAt(vector<double>& src,vector<double>& tar,int idx);
 bool FloatEqual(double a,double b,double precision = 1e-5){
 	return (abs(a-b)<precision);
 }
@@ -205,17 +205,52 @@ Matrix Matrix::ShrinkMatrix(int row, int col) {
 }
 
 Matrix Matrix::Inv() {
-	double det = this->Det();
-	Matrix result;
 
-	if (det == 0) {
+	if(Data.size() != Data.front().size()){
 		throw "Error";
 	}
+	Matrix result;
+	int idx = 0;
+	for(int i = 0;i < Data.size();i++){
+		for(int j = 0;j < Data.size();j++){
+			Data[i].push_back((i == j) ? 1 : 0);
+		}
+	}
+	for(int i = 0; i < Data.size(); i++){
+		int end;
+		for(end = Data.size() - 1; !Data[i][idx] && end > i; end--){
+			vector<double> tmp;
+			tmp = Data[i];
+			Data[i] = Data[end];
+			Data[end] = tmp;
+		}
+		for(int j = i + 1; j < Data.size(); j++){
+			CancelAt(Data[i],Data[j],idx);
+		}
 
-	result = this->Adj();
-	result /= det;
-
-	return result;
+		if(Data[i][idx] != 0){
+			for(int k = idx+1; k < Data[i].size(); k++){
+				Data[i][k] /= Data[i][idx];
+			}
+			Data[i][idx] = 1;
+		}
+		idx += 1;
+	}
+	for(int i = Data.size() - 1; i >= 0; i--){
+		idx -= 1;
+		for(int j = i - 1; j >= 0; j--){
+			CancelAt(Data[i],Data[j],idx);
+		}
+	}
+	for(int i = Data.size() - 1; i >= 0; i--){
+		if(Data[i][i] != 1){
+			throw "No answer";
+		}
+		for(int j = 0; j < Data.size(); j++){
+			Data[i].erase(Data[i].begin());
+		}
+	}
+	return *this;
 }
 Matrix Matrix::Adj() {
 	Matrix result;
@@ -370,7 +405,7 @@ void Matrix::Eigen(Matrix& m, Matrix& eigenVector, Matrix& eigenValue) {
 			tmpM.Data[i][i] -= l;
 		}
 		cout << l << endl;
-		G_Eliminate(tmpM,true);
+		G_Eliminate(tmpM,true,true);
 		PrintM(tmpM);
 	}
 	// not finished
@@ -428,7 +463,7 @@ std::vector<double> Matrix::SolveLinearSys(Matrix& m1, Matrix& m2) {
 	for (int i = 0; i < m1.Data.size(); i++) {
 		m1.Data[i].push_back(m2.Data[i][0]);
 	}
-	G_Eliminate(m1,true);
+	G_Eliminate(m1,true,true);
 	for (int i = 0; i < m1.Data.size(); i++) {
 		if(m1.Data[i][i] == 0){
 			if(m1.Data[i].back() == 0)
@@ -465,21 +500,27 @@ Vector Matrix::LeastSquare(Matrix& m, Matrix& v) {
 
 std::vector<Matrix> Matrix::rref(Matrix& m) {
 	vector<Matrix> result;
-	result.push_back(G_Eliminate(m,true));
-	result.push_back(G_Eliminate(m,false));
+	result.push_back(G_Eliminate(m,true,false));
+	result.push_back(G_Eliminate(m,false,false));
 	return result;
 }
 
-Matrix& Matrix::G_Eliminate(Matrix& m,bool up){
+Matrix& Matrix::G_Eliminate(Matrix& m,bool up,bool autoFill){
 	int idx = 0;
 	for(int i = 0; i < m.Data.size(); i++){
-		for(int end = m.Data.size() - 1; !m.Data[i][idx] && end > i; end--){
+		int end;
+		for(end = m.Data.size() - 1; !m.Data[i][idx] && end > i; end--){
 			vector<double> tmp;
 			tmp = m.Data[i];
 			m.Data[i] = m.Data[end];
 			m.Data[end] = tmp;
 		}
-
+		if(autoFill&&!m.Data[i][idx]){
+			for(int j = 0;j < m.Data.front().size()-1;j++){
+				m.Data[i][j] = (i == j) ? 1 : 0;
+			}
+			m.Data[i].back() = 1;
+		}
 		for(int j = i + 1; j < m.Data.size(); j++){
 			CancelAt(m.Data[i],m.Data[j],idx);
 		}

@@ -4,12 +4,10 @@ using namespace System;
 using namespace System::Windows::Forms;
 #ifdef DEBUG_M
 int main(){
-	Matrix m;
+	Matrix m,m2;
 	try{
-		m.Data.push_back({-30,47,47});
-		m.Data.push_back({75,-19,6});
-		m.Data.push_back({77,7,-18});
-		Matrix::PM_Eigen(m,m,m);
+
+		Matrix::PrintM(m.Inv());
 	} catch(const char* msg){
 		std::cout << msg << std::endl;
 	}
@@ -18,8 +16,7 @@ int main(){
 }
 #else
 [STAThread]
-void main(array<String^>^ args)
-{
+void main(array<String^>^ args){
 	Application::EnableVisualStyles();
 	Application::SetCompatibleTextRenderingDefault(false);
 	WindowsFormsApplication_cpp::WindowsForm windowsForm;
